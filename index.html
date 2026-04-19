@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hot Gadgets</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-center">
+
+  <!-- 🔹 HERO -->
+  <section class="py-16 bg-gray-200">
+    <h1 class="text-4xl font-bold mb-4">Apple Iphone 13 Pro Max</h1>
+    <p class="text-gray-600 mb-4">
+      There are many variations of passages of Lorem Ipsum available
+    </p>
+    <button class="bg-purple-600 text-white px-6 py-2 rounded-lg">BUY NOW</button>
+
+    <div class="flex justify-center gap-6 mt-8">
+      <img class="w-32" src="https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13.jpg">
+      <img class="w-40" src="https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13-pro.jpg">
+      <img class="w-32" src="https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13-pro-max.jpg">
+    </div>
+  </section>
+
+  <!-- 🔹 SEARCH -->
+  <section class="my-10">
+    <h2 class="text-2xl font-semibold mb-4">Search Your Phone</h2>
+
+    <input id="search-field" 
+      class="border px-4 py-2 rounded-l-lg w-64"
+      placeholder="e.g. oppo, samsung, iphone">
+
+    <button onclick="handleSearch()" 
+      class="bg-purple-600 text-white px-5 py-2 rounded-r-lg">
+      SEARCH
+    </button>
+  </section>
+
+  <!-- 🔹 API CARDS -->
+  <section class="max-w-6xl mx-auto px-6">
+    <div id="phone-container" 
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+    </div>
+
+    <button id="show-all" onclick="handleShowAll()" 
+      class="hidden mt-10 bg-purple-600 text-white px-6 py-2 rounded-lg">
+      Show All
+    </button>
+  </section>
+
+  <!-- 🔹 MODAL -->
+  <div id="modal" 
+    class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center">
+
+    <div class="bg-white p-6 rounded-lg w-80 text-left relative">
+      <span onclick="closeModal()" 
+        class="absolute right-3 top-2 cursor-pointer text-xl">✖</span>
+
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 🔹 PHONE CATALOG (WITH PRICE) -->
+  <section class="mt-20 bg-gray-100 py-16">
+
+    <h2 class="text-3xl font-bold mb-12">Our Latest Phones</h2>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
+
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <img class="mx-auto w-32 mb-4" src="https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13-mini.jpg">
+        <h3 class="font-semibold text-lg">iPhone 13 Mini</h3>
+        <p class="text-gray-500 text-sm mt-2">
+          There are many variations of passages available
+        </p>
+        <p class="text-purple-600 font-bold mt-3">₹69,999</p>
+        <button class="mt-3 bg-purple-600 text-white px-4 py-2 rounded-lg">
+          BUY NOW
+        </button>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <img class="mx-auto w-32 mb-4" src="https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13-pro.jpg">
+        <h3 class="font-semibold text-lg">iPhone 13 Pro</h3>
+        <p class="text-gray-500 text-sm mt-2">
+          There are many variations of passages available
+        </p>
+        <p class="text-purple-600 font-bold mt-3">₹1,19,999</p>
+        <button class="mt-3 bg-purple-600 text-white px-4 py-2 rounded-lg">
+          BUY NOW
+        </button>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-md">
+        <img class="mx-auto w-32 mb-4" src="https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-13-pro-max.jpg">
+        <h3 class="font-semibold text-lg">iPhone 13 Pro Max</h3>
+        <p class="text-gray-500 text-sm mt-2">
+          There are many variations of passages available
+        </p>
+        <p class="text-purple-600 font-bold mt-3">₹1,29,999</p>
+        <button class="mt-3 bg-purple-600 text-white px-4 py-2 rounded-lg">
+          BUY NOW
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 🔹 FOOTER -->
+  <section class="bg-gray-200 py-10 mt-10">
+    <div class="text-3xl mb-2">⚙️</div>
+    <h3 class="font-semibold">Hot Gadgets BD</h3>
+    <p class="text-gray-600 text-sm mt-2">
+      There are many variations of passages available
+    </p>
+  </section>
+
+  <!-- 🔹 JS -->
+  <script>
+    let allPhones = [];
+    let isShowAll = false;
+
+    const handleSearch = async () => {
+      const input = document.getElementById("search-field").value;
+
+      if (!input) {
+        alert("Enter phone name");
+        return;
+      }
+
+      const res = await fetch(`https://openapi.programming-hero.com/api/phones?search=${input}`);
+      const data = await res.json();
+
+      if (!data.data.length) {
+        document.getElementById("phone-container").innerHTML =
+          "<p>No phones found</p>";
+        return;
+      }
+
+      allPhones = data.data;
+      isShowAll = false;
+      displayPhones();
+    };
+
+    const displayPhones = () => {
+      const container = document.getElementById("phone-container");
+      container.innerHTML = "";
+
+      const phones = isShowAll ? allPhones : allPhones.slice(0, 6);
+
+      phones.forEach(phone => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+          <div class="bg-white p-6 rounded-xl shadow-md">
+            <img class="mx-auto w-28 mb-4" src="${phone.image}">
+            <h3 class="text-base font-semibold">${phone.phone_name}</h3>
+            <button onclick="loadDetails('${phone.slug}')"
+              class="mt-4 bg-purple-600 text-white px-4 py-1 text-sm rounded-md">
+              SHOW DETAILS
+            </button>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+
+      const btn = document.getElementById("show-all");
+
+      if (!isShowAll && allPhones.length > 6) {
+        btn.classList.remove("hidden");
+      } else {
+        btn.classList.add("hidden");
+      }
+    };
+
+    const handleShowAll = () => {
+      isShowAll = true;
+      displayPhones();
+    };
+
+    const loadDetails = async (id) => {
+      const res = await fetch(`https://openapi.programming-hero.com/api/phone/${id}`);
+      const data = await res.json();
+      showDetails(data.data);
+    };
+
+    const showDetails = (phone) => {
+      const modal = document.getElementById("modal");
+      const body = document.getElementById("modal-body");
+
+      body.innerHTML = `
+        <h2 class="text-xl font-bold">${phone.name}</h2>
+        <p class="mt-2"><b>Brand:</b> ${phone.brand}</p>
+        <p><b>Release:</b> ${phone.releaseDate || "Not Available"}</p>
+        <p><b>Chipset:</b> ${phone.mainFeatures?.chipSet}</p>
+      `;
+
+      modal.classList.remove("hidden");
+    };
+
+    const closeModal = () => {
+      document.getElementById("modal").classList.add("hidden");
+    };
+  </script>
+
+</body>
+</html>
